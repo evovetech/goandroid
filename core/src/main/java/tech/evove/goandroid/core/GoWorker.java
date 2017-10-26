@@ -1,4 +1,4 @@
-package tech.evove.goandroid;
+package tech.evove.goandroid.core;
 
 import java.util.concurrent.TimeUnit;
 
@@ -8,7 +8,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.util.ExceptionHelper;
 
-class GoWorker extends Scheduler.Worker {
+final class GoWorker extends Scheduler.Worker {
     private final core.Worker actual;
 
     GoWorker(core.Worker actual) {
