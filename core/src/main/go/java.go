@@ -2,19 +2,19 @@ package core
 
 // +build android
 
-import (
-	rxd "Java/io/reactivex/disposables"
-	"Java/java/lang"
-)
-
-type Runnable = lang.Runnable
-type Disposable = rxd.Disposable
+type Runnable interface {
+	Run() error
+}
+type Disposable interface {
+	Dispose()
+	IsDisposed() bool
+}
 type ScheduleWorker interface {
-	Schedule(r Runnable, nanos int) Disposable
+	Schedule(r Runnable, nanos int) (Disposable, error)
 }
 type Worker interface {
 	ScheduleWorker
-	rxd.Disposable
+	Disposable
 }
 type Scheduler interface {
 	ScheduleWorker

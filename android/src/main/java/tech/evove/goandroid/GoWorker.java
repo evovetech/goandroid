@@ -19,7 +19,7 @@ class GoWorker extends Scheduler.Worker {
         if (actual.isDisposed()) {
             return EmptyDisposable.INSTANCE;
         }
-        return actual.schedule(runnable, timeUnit.toNanos(l));
+        return GoScheduler.schedule(actual, runnable, l, timeUnit);
     }
 
     @Override
