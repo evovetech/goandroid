@@ -5,73 +5,18 @@ android {
     compileSdkVersion 26
     buildToolsVersion "26.0.2"
 
-def outputName = project.name
-def srcDir = "${project.projectDir}/src"
-def tmpDir = "${project.buildDir}/tmp/gobind"
-def tmpAar = "${tmpDir}/${outputName}.aar"
-def tmpAarDir = "${tmpDir}/${outputName}"
-def tmpSrc = "${tmpDir}/${outputName}-sources.jar"
+    defaultConfig {
+        minSdkVersion 15
+        versionCode 1
+        versionName "1.0"
 
-task gobind(type: Exec) {
-    inputs.dir(srcDir)
-    outputs.file(tmpDir)
-    mkdir(tmpDir)
-
-    workingDir srcDir
-    commandLine 'gomobile', 'bind', '-v', '-o', "${tmpAar}"
-}
-
-task sourcesJar(type: Zip, dependsOn: gobind) {
-    group 'artifact'
-    description 'creates sources'
-    classifier 'sources'
-    extension = "jar"
-    from zipTree(tmpSrc)
-}
-
-def aarCopySpec = project.copySpec {
-    from zipTree(tmpAar)
-    exclude("AndroidManifest.xml")
-}
-
-task extractAar(type: Copy, dependsOn: gobind) {
-    into tmpAarDir
-    with aarCopySpec
-}
-
-task fixManifest(dependsOn: extractAar) {
-    def header = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-    def fileName = "AndroidManifest.xml"
-    def output = new File(tmpAarDir, fileName)
-    inputs.property("header", header)
-    inputs.file(tmpAar)
-    outputs.files(output)
-    doLast {
-        zipTree(tmpAar)
-                .matching { include(fileName) }
-                .first()
-                .withReader { r ->
-            output.withPrintWriter { w ->
-                w.println(header)
-                r.eachLine { line ->
-                    w.println(line)
-                }
-            }
-        }
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-}
-
-task assembleAar(type: Zip, dependsOn: fixManifest) {
-    group 'artifact'
-    description 'creates aar'
-    extension = "aar"
-    from tmpAarDir
-}
-
-artifacts {
-    "default"(assembleAar) {
-        extension = "aar"
-        type = "aar"
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
     }
     "default" sourcesJar
 }
