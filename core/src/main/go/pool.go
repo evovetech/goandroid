@@ -3,8 +3,10 @@ package core
 // +build android
 
 type pool struct {
+	Once
+
 	workers []*poolWorker
-	queue   *requestQueue
+	queue   requestQueue
 	done    chan int
 }
 
@@ -13,9 +15,10 @@ type poolWorker struct {
 }
 
 func (p *pool) init(size int) *pool {
-	p.workers = make([]*poolWorker, size)
-	p.queue = new(requestQueue).
-		init(0)
-	p.done = make(chan int, 1)
+	p.Once.init(func() {
+		p.workers = make([]*poolWorker, size)
+		p.queue.init(size)
+		p.done = make(chan int, 1)
+	})
 	return p
 }

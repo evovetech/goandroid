@@ -12,8 +12,7 @@ type goWorker struct {
 }
 
 func (w *goWorker) Schedule(r Runnable, nanos int) (Disposable, error) {
-	gd, ge := w.doSchedule(r, nanos)
-	return gd, ge
+	return w.doSchedule(r, nanos)
 }
 
 func (w *goWorker) doSchedule(r Runnable, nanos int) (d Disposable, err error) {

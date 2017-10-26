@@ -5,40 +5,35 @@ package core
 import (
 	"fmt"
 	"runtime"
-	"sync"
 )
 
-var once sync.Once
-var scheduler *goScheduler
+var s goScheduler
 
 type goScheduler struct {
 	Scheduler
-	pool *pool
+	Once
+
+	pool pool
 }
 
-func (s *goScheduler) init(size int) *goScheduler {
-	s.pool = new(pool).
-		init(size)
-	return s
+func scheduler() Scheduler {
+	s.init(func() {
+		size := runtime.GOMAXPROCS(0)
+		fmt.Printf("GOMAXPROCS: %d\n", size)
+		s.pool.init(size)
+	})
+	fmt.Printf("s = %p\n", &s)
+	return &s
 }
 
 func (s *goScheduler) CreateWorker() Worker {
 	//TODO:
+	fmt.Printf("s = %p\n", s)
 	return &goWorker{}
 }
 
 func (s *goScheduler) Schedule(r Runnable, nanos int) (Disposable, error) {
 	// TODO:
-	return s.CreateWorker().
-		Schedule(r, nanos)
-}
-
-func GoScheduler() Scheduler {
-	once.Do(func() {
-		size := runtime.GOMAXPROCS(0)
-		fmt.Printf("GOMAXPROCS: %d\n", size)
-		scheduler = new(goScheduler).
-			init(size)
-	})
-	return scheduler
+	fmt.Printf("s = %p\n", s)
+	return s.CreateWorker().Schedule(r, nanos)
 }
