@@ -6,6 +6,7 @@ import io.reactivex.Scheduler;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.util.ExceptionHelper;
 
 final class GoWorker extends Scheduler.Worker {
     private final core.Worker actual;
