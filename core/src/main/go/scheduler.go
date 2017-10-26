@@ -27,7 +27,7 @@ func (s *goScheduler) CreateWorker() Worker {
 	return &goWorker{}
 }
 
-func (s *goScheduler) Schedule(r Runnable, nanos int) Disposable {
+func (s *goScheduler) Schedule(r Runnable, nanos int) (Disposable, error) {
 	// TODO:
 	return s.CreateWorker().
 		Schedule(r, nanos)

@@ -10,7 +10,7 @@ import (
 type Runnable = lang.Runnable
 type Disposable = rxd.Disposable
 type ScheduleWorker interface {
-	Schedule(r Runnable, nanos int) Disposable
+	Schedule(r Runnable, nanos int) (Disposable, error)
 }
 type Worker interface {
 	ScheduleWorker

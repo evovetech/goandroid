@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import core.Core;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.util.ExceptionHelper;
 
 public class GoScheduler extends Scheduler {
     private final core.Scheduler scheduler = Core.goScheduler();
@@ -16,6 +17,10 @@ public class GoScheduler extends Scheduler {
 
     @Override
     public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
-        return scheduler.schedule(run, unit.toNanos(delay));
+        try {
+            return scheduler.schedule(run, unit.toNanos(delay));
+        } catch (Exception e) {
+            throw ExceptionHelper.wrapOrThrow(e);
+        }
     }
 }

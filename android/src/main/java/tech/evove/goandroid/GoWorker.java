@@ -6,6 +6,7 @@ import io.reactivex.Scheduler;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.util.ExceptionHelper;
 
 class GoWorker extends Scheduler.Worker {
     private final core.Worker actual;
@@ -19,7 +20,11 @@ class GoWorker extends Scheduler.Worker {
         if (actual.isDisposed()) {
             return EmptyDisposable.INSTANCE;
         }
-        return actual.schedule(runnable, timeUnit.toNanos(l));
+        try {
+            return actual.schedule(runnable, timeUnit.toNanos(l));
+        } catch (Exception e) {
+            throw ExceptionHelper.wrapOrThrow(e);
+        }
     }
 
     @Override
