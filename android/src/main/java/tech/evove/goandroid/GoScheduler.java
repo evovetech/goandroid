@@ -8,8 +8,20 @@ import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.util.ExceptionHelper;
 
-public class GoScheduler extends Scheduler {
-    private final core.Scheduler scheduler = Core.goScheduler();
+public final class GoScheduler extends Scheduler {
+    private static final class Holder {
+        private static final GoScheduler Instance = new GoScheduler(Core.goScheduler());
+    }
+
+    private final core.Scheduler scheduler;
+
+    private GoScheduler(core.Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
+
+    public static GoScheduler instance() {
+        return Holder.Instance;
+    }
 
     @Override
     public Worker createWorker() {
