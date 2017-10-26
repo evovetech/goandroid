@@ -1,9 +1,9 @@
-package tech.evove.goandroid;
+package tech.evove.goandroid.core;
 
 
 import io.reactivex.disposables.Disposable;
 
-public class GoDisposable implements core.Disposable, Disposable {
+final class GoDisposable implements core.Disposable, Disposable {
     private final core.Disposable actual;
 
     private GoDisposable(core.Disposable actual) {

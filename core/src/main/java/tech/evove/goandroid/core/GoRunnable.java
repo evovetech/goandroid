@@ -1,6 +1,6 @@
-package tech.evove.goandroid;
+package tech.evove.goandroid.core;
 
-public final class GoRunnable implements core.Runnable, Runnable {
+final class GoRunnable implements core.Runnable, Runnable {
     private final Runnable actual;
 
     private GoRunnable(Runnable actual) {

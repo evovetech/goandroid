@@ -10,8 +10,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 import core.Counter;
-import io.reactivex.Observable;
 import io.reactivex.Scheduler;
+import tech.evove.goandroid.core.GoScheduler;
 
 import static java.lang.String.format;
 import static java.util.Locale.US;

@@ -1,4 +1,4 @@
-package tech.evove.goandroid;
+package tech.evove.goandroid.core;
 
 import java.util.concurrent.TimeUnit;
 
@@ -19,7 +19,7 @@ public final class GoScheduler extends Scheduler {
         this.scheduler = scheduler;
     }
 
-    public static GoScheduler instance() {
+    public static Scheduler instance() {
         return Holder.Instance;
     }
 
