@@ -11,6 +11,7 @@ import android.view.View;
 
 import core.Counter;
 import io.reactivex.Scheduler;
+import tech.evove.goandroid.core.GoScheduler;
 
 import static java.lang.String.format;
 import static java.util.Locale.US;
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         final Counter counter = new Counter(0);
-        final Scheduler s = new GoScheduler();
+        final Scheduler s = GoScheduler.instance();
         final Runnable r = new Runnable() {
             @Override
             public void run() {

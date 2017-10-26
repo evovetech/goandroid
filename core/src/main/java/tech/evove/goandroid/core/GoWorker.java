@@ -20,11 +20,7 @@ final class GoWorker extends Scheduler.Worker {
         if (actual.isDisposed()) {
             return EmptyDisposable.INSTANCE;
         }
-        try {
-            return actual.schedule(runnable, timeUnit.toNanos(l));
-        } catch (Exception e) {
-            throw ExceptionHelper.wrapOrThrow(e);
-        }
+        return GoScheduler.schedule(actual, runnable, l, timeUnit);
     }
 
     @Override
