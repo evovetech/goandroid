@@ -2,23 +2,15 @@ package core
 
 // +build android
 
-import (
-	rxd "Java/io/reactivex/disposables"
-)
-
-type GoDisposable struct {
-	rxd.Disposable
+type goDisposable struct {
+	Disposable
 	p int
 }
 
-func NewGoDisposable() *GoDisposable {
-	return &GoDisposable{}
-}
-
-func (d *GoDisposable) Dispose() {
+func (d *goDisposable) Dispose() {
 	d.p = 1
 }
 
-func (d *GoDisposable) IsDisposed() bool {
+func (d *goDisposable) IsDisposed() bool {
 	return d.p != 0
 }

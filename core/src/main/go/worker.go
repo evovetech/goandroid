@@ -3,24 +3,30 @@ package core
 // +build android
 
 import (
-	"Java/java/lang"
+	rxd "Java/io/reactivex/disposables"
 )
 
+type workScheduler interface {
+	Schedule(r Runnable, millis int) Disposable
+}
+
 type Worker interface {
-	Schedule(r lang.Runnable, millis int) *GoDisposable
+	rxd.Disposable
+	workScheduler
 }
 
-type GoWorker struct {
-	Worker
-	*GoDisposable
+type goWorker struct {
+	*goDisposable
+	workScheduler
 }
 
-func (w *GoWorker) Schedule(r lang.Runnable, millis int) *GoDisposable {
-	return NewGoDisposable()
+func (w *goWorker) Schedule(r Runnable, millis int) Disposable {
+	// TODO:
+	return &goDisposable{}
 }
 
-func NewGoWorker() *GoWorker {
-	return &GoWorker{
-		GoDisposable: NewGoDisposable(),
+func NewWorker() Worker {
+	return &goWorker{
+		goDisposable: &goDisposable{},
 	}
 }

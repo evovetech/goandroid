@@ -8,9 +8,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
 class GoWorker extends Scheduler.Worker {
-    private final core.GoWorker actual;
+    private final core.Worker actual;
 
-    GoWorker(core.GoWorker actual) {
+    GoWorker(core.Worker actual) {
         this.actual = actual;
     }
 

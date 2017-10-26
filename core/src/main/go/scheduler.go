@@ -3,20 +3,23 @@ package core
 // +build android
 
 import (
-	"runtime"
-	"fmt"
 	"container/list"
+	"fmt"
+	"runtime"
 	"sync"
 )
 
 var once sync.Once
 var pool *Pool
 
-type requestChannel = chan []*request
-
 type Pool struct {
 	workers []*poolWorker
 	queue   *requestQueue
+	done    chan int
+}
+
+type poolWorker struct {
+	in chan *request
 }
 
 func GetPool() *Pool {
@@ -25,30 +28,26 @@ func GetPool() *Pool {
 		fmt.Printf("GOMAXPROCS: %d\n", size)
 		pool = &Pool{
 			workers: make([]*poolWorker, size),
-			queue: newRequestQueue(0),
+			queue:   new(requestQueue).init(0),
+			done:    make(chan int, 1),
 		}
 	})
 	return pool
 }
 
 type request struct {
-	time int
+	atTime   int
+	run      Runnable
+	disposed chan int
 }
 
 type requestQueue struct {
 	*list.List
-	in chan []*request
+	in chan *request
 }
 
-func newRequestQueue(size int) *requestQueue {
-	return &requestQueue{
-		List: list.New(),
-		in: make(chan []*request, size),
-	}
+func (q *requestQueue) init(size int) *requestQueue {
+	q.List = list.New()
+	q.in = make(chan *request, size)
+	return q
 }
-
-type poolWorker struct {
-	in chan []*request
-}
-
-
