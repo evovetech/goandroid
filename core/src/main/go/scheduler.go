@@ -3,51 +3,42 @@ package core
 // +build android
 
 import (
-	"container/list"
 	"fmt"
 	"runtime"
 	"sync"
 )
 
 var once sync.Once
-var pool *Pool
+var scheduler *goScheduler
 
-type Pool struct {
-	workers []*poolWorker
-	queue   *requestQueue
-	done    chan int
+type goScheduler struct {
+	Scheduler
+	pool *pool
 }
 
-type poolWorker struct {
-	in chan *request
+func (s *goScheduler) init(size int) *goScheduler {
+	s.pool = new(pool).
+		init(size)
+	return s
 }
 
-func GetPool() *Pool {
+func (s *goScheduler) CreateWorker() Worker {
+	//TODO:
+	return &goWorker{}
+}
+
+func (s *goScheduler) Schedule(r Runnable, nanos int) Disposable {
+	// TODO:
+	return s.CreateWorker().
+		Schedule(r, nanos)
+}
+
+func GoScheduler() Scheduler {
 	once.Do(func() {
 		size := runtime.GOMAXPROCS(0)
 		fmt.Printf("GOMAXPROCS: %d\n", size)
-		pool = &Pool{
-			workers: make([]*poolWorker, size),
-			queue:   new(requestQueue).init(0),
-			done:    make(chan int, 1),
-		}
+		scheduler = new(goScheduler).
+			init(size)
 	})
-	return pool
-}
-
-type request struct {
-	atTime   int
-	run      Runnable
-	disposed chan int
-}
-
-type requestQueue struct {
-	*list.List
-	in chan *request
-}
-
-func (q *requestQueue) init(size int) *requestQueue {
-	q.List = list.New()
-	q.in = make(chan *request, size)
-	return q
+	return scheduler
 }
