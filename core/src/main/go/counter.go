@@ -1,5 +1,7 @@
 package core
 
+// +build android
+
 type Counter struct {
 	Value int
 }

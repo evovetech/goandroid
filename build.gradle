@@ -1,17 +1,27 @@
 buildscript {
     repositories {
-        jcenter()
         maven { url 'https://maven.google.com' }
+        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:2.3.3"
+        classpath 'gradle.plugin.org.golang.mobile.bind:gobindPlugin:0.2.9'
+    }
+}
+
+Properties props = new Properties()
+props.load(new FileInputStream("${project.rootDir}/local.properties"))
+props.each { prop ->
+    if (!project.hasProperty(prop.key)) {
+        project.allprojects.each { p -> p.ext.set(prop.key, prop.value) }
     }
 }
 
 allprojects {
     repositories {
-        jcenter()
         maven { url 'https://maven.google.com' }
+        jcenter()
     }
 
     configurations.all { c ->

@@ -1,54 +1,58 @@
-apply plugin: 'base'
-
-version = '1.0'
-
-def outputName = project.name
-def srcDir = "${project.projectDir}/src"
-def tmpDir = "${project.buildDir}/tmp/gobind"
-def tmpAar = "${tmpDir}/${outputName}.aar"
-def tmpSrc = "${tmpDir}/${outputName}-sources.jar"
-
-task gobind(type: Exec) {
-    inputs.dir(srcDir)
-    outputs.file(tmpDir)
-    mkdir(tmpDir)
-
-    workingDir srcDir
-    commandLine 'gomobile', 'bind', '-v', '-o', "${tmpAar}"
-}
-
-task sourcesJar(type: Jar, dependsOn: gobind) {
-    group 'artifact'
-    description 'creates sources'
-    classifier 'sources'
-    from zipTree(tmpSrc)
-}
-
-task assembleAar(type: Jar, dependsOn: gobind) {
-    group 'artifact'
-    description 'creates aar'
-    extension = "aar"
-    manifest = null
-    from zipTree(tmpAar)
-}
-
-artifacts {
-    "default" sourcesJar
-    "default"(assembleAar) {
-        extension = "aar"
-        type = "aar"
-        builtBy assembleAar
-    }
-}
-
-repositories {
-    maven { url "${buildDir}/repository" }
-}
-
-uploadArchives {
-    repositories {
-        maven { url "${buildDir}/repository" }
-    }
-}
-
-
+//apply plugin: 'base'
+//
+//version = '1.0'
+//
+//def outputName = project.name
+//def srcDir = "${project.projectDir}/src"
+//def tmpDir = "${project.buildDir}/tmp/gobind"
+//def tmpAar = "${tmpDir}/${outputName}.aar"
+//def tmpSrc = "${tmpDir}/${outputName}-sources.jar"
+//
+//task gobind(type: Exec) {
+//    inputs.dir(srcDir)
+//    outputs.file(tmpDir)
+//    mkdir(tmpDir)
+//
+//    workingDir srcDir
+//    commandLine 'gomobile', 'bind', '-v', '-o', "${tmpAar}"
+//}
+//
+//task sourcesJar(type: Jar, dependsOn: gobind) {
+//    group 'artifact'
+//    description 'creates sources'
+//    classifier 'sources'
+//    from zipTree(tmpSrc)
+//}
+//
+//task assembleAar(type: Jar, dependsOn: gobind) {
+//    group 'artifact'
+//    description 'creates aar'
+//    extension = "aar"
+//    manifest = null
+//    from zipTree(tmpAar)
+//}
+//
+//artifacts {
+//    "default" sourcesJar
+//    "default"(sourcesJar) {
+//        extension = "jar"
+//        classifier = "sources"
+//    }
+//    "default"(assembleAar) {
+//        extension = "aar"
+//        type = "aar"
+//        builtBy assembleAar
+//    }
+//}
+//
+//repositories {
+//    maven { url "${buildDir}/repository" }
+//}
+//
+//uploadArchives {
+//    repositories {
+//        maven { url "${buildDir}/repository" }
+//    }
+//}
+//
+//
