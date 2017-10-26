@@ -3,6 +3,9 @@ local.properties
 .DS_Store
 build/
 
+# gen so
+libgojni.so
+
 #idea
 *.iml
 /**/.idea/*

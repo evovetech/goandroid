@@ -10,6 +10,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 import core.Counter;
+import io.reactivex.Scheduler;
+import tech.evove.goandroid.core.GoScheduler;
 
 import static java.lang.String.format;
 import static java.util.Locale.US;
@@ -24,12 +26,19 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         final Counter counter = new Counter(0);
+        final Scheduler s = GoScheduler.instance();
+        final Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                counter.increment();
+            }
+        };
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                long i = counter.increment();
-                String txt = format(US, "Hello %d times!", i);
+                s.scheduleDirect(r);
+                String txt = format(US, "Hello %d times!", counter.getValue());
                 Snackbar.make(view, txt, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }

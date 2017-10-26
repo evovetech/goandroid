@@ -1,6 +1,9 @@
-apply plugin: 'base'
+apply plugin: 'com.android.library'
+apply plugin: "org.golang.mobile.bind"
 
-version = '1.0'
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
 
 def outputName = project.name
 def srcDir = "${project.projectDir}/src"
@@ -73,14 +76,19 @@ artifacts {
     "default" sourcesJar
 }
 
-repositories {
-    maven { url "${buildDir}/repository" }
+dependencies {
+    compile 'io.reactivex.rxjava2:rxjava:2.1.5'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+
+    testCompile 'junit:junit:4.12'
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
 }
 
-uploadArchives {
-    repositories {
-        maven { url "${buildDir}/repository" }
-    }
+gobind {
+    pkg = "github.com/evovetech/goandroid/core/src/main/go"
+    GOPATH = project.gopath
+    GO = project.go
 }
-
-
