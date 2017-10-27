@@ -2,7 +2,6 @@ package tech.evove.goandroid;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -34,12 +33,14 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
-        final PublishSubject<View> subject = PublishSubject.create();
+        final PublishSubject<Boolean> subject = PublishSubject.create();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                subject.onNext(view);
+                subject.onNext(true);
+                subject.onNext(true);
+                subject.onNext(true);
             }
         });
 
@@ -47,24 +48,23 @@ public class MainActivity extends AppCompatActivity {
         setup(subject, true);
     }
 
-    private void setup(PublishSubject<View> subject, final boolean gogo) {
+    private void setup(PublishSubject<Boolean> subject, final boolean gogo) {
         final Counter counter = new Counter(0);
         Scheduler scheduler = gogo
                 ? GoScheduler.instance()
                 : Schedulers.io();
-        subject.observeOn(scheduler)
-                .flatMap(new Function<View, ObservableSource<Runnable>>() {
+        subject.subscribeOn(scheduler)
+                .observeOn(scheduler)
+                .flatMap(new Function<Boolean, ObservableSource<Runnable>>() {
                     @Override
-                    public ObservableSource<Runnable> apply(final View view) throws Exception {
+                    public ObservableSource<Runnable> apply(Boolean ignored) throws Exception {
                         final String txt = format(US, "Hello %d times!", counter.increment());
                         String prefix = gogo ? "gogo" : "nogo";
-                        String tag = prefix + "-" + Thread.currentThread().getName();
-                        Log.d(tag, txt);
+                        final String tag = prefix + "-" + Thread.currentThread().getName();
                         return Observable.<Runnable>just(new Runnable() {
                             @Override
                             public void run() {
-                                Snackbar.make(view, txt, Snackbar.LENGTH_LONG)
-                                        .setAction("Action", null).show();
+                                Log.d(tag, txt);
                             }
                         });
                     }

@@ -20,6 +20,7 @@ func (w *goWorker) doSchedule(r Runnable, delayNanos int64) (d Disposable, err e
 	go func() {
 		select {
 		case <-ctx.Done():
+			err = ctx.Err()
 			return
 		default:
 			r.Run()
