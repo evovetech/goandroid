@@ -2,23 +2,22 @@ package core
 
 // +build android
 
-type pool struct {
+type gopool struct {
 	Once
 
-	workers []*poolWorker
+	workers []*gopoolWorker
 	queue   requestQueue
 	done    chan int
 }
 
-type poolWorker struct {
+type gopoolWorker struct {
 	in chan *request
 }
 
-func (p *pool) init(size int) *pool {
+func (p *gopool) init(size int) {
 	p.Once.init(func() {
-		p.workers = make([]*poolWorker, size)
+		p.workers = make([]*gopoolWorker, size)
 		p.queue.init(size)
 		p.done = make(chan int, 1)
 	})
-	return p
 }

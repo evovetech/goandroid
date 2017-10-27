@@ -12,7 +12,7 @@ type Disposable interface {
 }
 
 type ScheduleWorker interface {
-	Schedule(r Runnable, nanos int) (Disposable, error)
+	Schedule(r Runnable, nanos int64) (Disposable, error)
 }
 
 type Worker interface {

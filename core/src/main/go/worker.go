@@ -11,11 +11,11 @@ type goWorker struct {
 	*goDisposable
 }
 
-func (w *goWorker) Schedule(r Runnable, nanos int) (Disposable, error) {
+func (w *goWorker) Schedule(r Runnable, nanos int64) (Disposable, error) {
 	return w.doSchedule(r, nanos)
 }
 
-func (w *goWorker) doSchedule(r Runnable, nanos int) (d Disposable, err error) {
+func (w *goWorker) doSchedule(r Runnable, nanos int64) (d Disposable, err error) {
 	gd := &goDisposable{}
 	d = gd
 	fmt.Printf("scheduling in %d nanos\n", nanos)

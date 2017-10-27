@@ -7,23 +7,35 @@ import (
 	"runtime"
 )
 
+const debugMaxProcs bool = false
+
 var s goScheduler
 
 type goScheduler struct {
 	Scheduler
 	Once
 
-	pool pool
+	pool gopool
 }
 
 func scheduler() Scheduler {
 	s.init(func() {
-		size := runtime.GOMAXPROCS(0)
-		fmt.Printf("GOMAXPROCS: %d\n", size)
-		s.pool.init(size)
+		s.pool.init(poolSize())
 	})
-	fmt.Printf("s = %p\n", &s)
+	fmt.Printf("scheduler() = %p\n", &s)
 	return &s
+}
+
+func poolSize() int {
+	var size int
+	if debugMaxProcs {
+		size = 2
+	} else {
+		max := runtime.GOMAXPROCS(0)
+		size = max*2 + 1
+	}
+	fmt.Printf("GOMAXPROCS: %d\n", size)
+	return size
 }
 
 func (s *goScheduler) CreateWorker() Worker {
@@ -32,7 +44,7 @@ func (s *goScheduler) CreateWorker() Worker {
 	return &goWorker{}
 }
 
-func (s *goScheduler) Schedule(r Runnable, nanos int) (Disposable, error) {
+func (s *goScheduler) Schedule(r Runnable, nanos int64) (Disposable, error) {
 	// TODO:
 	fmt.Printf("s = %p\n", s)
 	return s.CreateWorker().Schedule(r, nanos)

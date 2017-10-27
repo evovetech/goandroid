@@ -4,7 +4,7 @@ package core
 
 type goDisposable struct {
 	Disposable
-	p int
+	p int32
 }
 
 func (d *goDisposable) Dispose() {

@@ -10,7 +10,7 @@ import (
 const debug = true
 
 type Initializer interface {
-	init()
+	init(func())
 }
 
 type Once struct {
