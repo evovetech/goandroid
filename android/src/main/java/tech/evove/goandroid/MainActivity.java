@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,9 +13,11 @@ import android.view.View;
 import core.Counter;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import tech.evove.goandroid.core.GoScheduler;
 
@@ -40,13 +43,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        setup(subject, false);
+        setup(subject, true);
+    }
 
+    private void setup(PublishSubject<View> subject, final boolean gogo) {
         final Counter counter = new Counter(0);
-        subject.observeOn(GoScheduler.instance())
+        Scheduler scheduler = gogo
+                ? GoScheduler.instance()
+                : Schedulers.io();
+        subject.observeOn(scheduler)
                 .flatMap(new Function<View, ObservableSource<Runnable>>() {
                     @Override
                     public ObservableSource<Runnable> apply(final View view) throws Exception {
                         final String txt = format(US, "Hello %d times!", counter.increment());
+                        String prefix = gogo ? "gogo" : "nogo";
+                        String tag = prefix + "-" + Thread.currentThread().getName();
+                        Log.d(tag, txt);
                         return Observable.<Runnable>just(new Runnable() {
                             @Override
                             public void run() {
