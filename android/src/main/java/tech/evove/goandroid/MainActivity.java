@@ -10,7 +10,12 @@ import android.view.MenuItem;
 import android.view.View;
 
 import core.Counter;
-import io.reactivex.Scheduler;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.subjects.PublishSubject;
 import tech.evove.goandroid.core.GoScheduler;
 
 import static java.lang.String.format;
@@ -25,24 +30,39 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final Counter counter = new Counter(0);
-        final Scheduler s = GoScheduler.instance();
-        final Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                counter.increment();
-            }
-        };
+
+        final PublishSubject<View> subject = PublishSubject.create();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                s.scheduleDirect(r);
-                String txt = format(US, "Hello %d times!", counter.getValue());
-                Snackbar.make(view, txt, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                subject.onNext(view);
             }
         });
+
+
+        final Counter counter = new Counter(0);
+        subject.observeOn(GoScheduler.instance())
+                .flatMap(new Function<View, ObservableSource<Runnable>>() {
+                    @Override
+                    public ObservableSource<Runnable> apply(final View view) throws Exception {
+                        final String txt = format(US, "Hello %d times!", counter.increment());
+                        return Observable.<Runnable>just(new Runnable() {
+                            @Override
+                            public void run() {
+                                Snackbar.make(view, txt, Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+                            }
+                        });
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Runnable>() {
+                    @Override
+                    public void accept(Runnable r) throws Exception {
+                        r.run();
+                    }
+                });
     }
 
     @Override

@@ -13,14 +13,14 @@ type request struct {
 }
 
 type requestQueue struct {
-	Once
+	once
 	list.List
 
 	in chan *request
 }
 
 func (q *requestQueue) init(size int) *requestQueue {
-	q.Once.init(func() {
+	q.once.init(func() {
 		q.List.Init()
 		q.in = make(chan *request, size)
 	})

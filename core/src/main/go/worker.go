@@ -2,35 +2,29 @@ package core
 
 // +build android
 
-import (
-	"fmt"
-)
-
 type goWorker struct {
-	ScheduleWorker
-	*goDisposable
+	context
 }
 
-func (w *goWorker) Schedule(r Runnable, nanos int64) (Disposable, error) {
-	return w.doSchedule(r, nanos)
+func newWorker(parent context) *goWorker {
+	ctx, _ := contextWithCancel(parent)
+	return &goWorker{context: ctx}
 }
 
-func (w *goWorker) doSchedule(r Runnable, nanos int64) (d Disposable, err error) {
-	gd := &goDisposable{}
-	d = gd
-	fmt.Printf("scheduling in %d nanos\n", nanos)
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println("Recovered in f", r)
-			switch t := r.(type) {
-			case error:
-				err = t
-			default:
-				err = fmt.Errorf("Error: %s\n", t)
-			}
+func (w *goWorker) Schedule(r Runnable, delayNanos int64) (Disposable, error) {
+	return w.doSchedule(r, delayNanos)
+}
+
+func (w *goWorker) doSchedule(r Runnable, delayNanos int64) (d Disposable, err error) {
+	ctx, _ := contextWithCancel(w.context)
+	go func() {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			r.Run()
 		}
 	}()
-	r.Run()
-	gd.Dispose()
+	d = ctx
 	return
 }

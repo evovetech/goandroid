@@ -3,25 +3,13 @@ package core
 // +build android
 
 import (
-	"fmt"
 	"sync"
 )
 
-const debug = true
-
-type Initializer interface {
-	init(func())
-}
-
-type Once struct {
-	Initializer
-
+type once struct {
 	once sync.Once
 }
 
-func (o *Once) init(f func()) {
+func (o *once) init(f func()) {
 	o.once.Do(f)
-	if debug {
-		fmt.Printf("once = %p\n", o)
-	}
 }

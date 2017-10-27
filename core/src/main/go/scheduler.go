@@ -5,6 +5,7 @@ package core
 import (
 	"fmt"
 	"runtime"
+	"sync"
 )
 
 const debugMaxProcs bool = false
@@ -13,17 +14,17 @@ var s goScheduler
 
 type goScheduler struct {
 	Scheduler
-	Once
 
+	mu   sync.Mutex
+	ctx  context
 	pool gopool
 }
 
 func scheduler() Scheduler {
-	s.init(func() {
-		s.pool.init(poolSize())
-	})
-	fmt.Printf("scheduler() = %p\n", &s)
-	return &s
+	sch := s.init()
+	fmt.Printf("scheduler(): &s       = %p\n", &s)
+	fmt.Printf("scheduler(): s.init() = %p\n", sch)
+	return sch
 }
 
 func poolSize() int {
@@ -38,14 +39,33 @@ func poolSize() int {
 	return size
 }
 
+func (s *goScheduler) init() *goScheduler {
+	s.Start()
+	return s
+}
+
+func (s *goScheduler) Start() {
+	s.mu.Lock()
+	s.pool.init(poolSize())
+	s.ctx, _ = rootContextWithCancel()
+	s.mu.Unlock()
+}
+
+func (s *goScheduler) Shutdown() {
+	s.mu.Lock()
+	s.ctx.Dispose()
+	s.pool = gopool{}
+	s.mu.Unlock()
+}
+
 func (s *goScheduler) CreateWorker() Worker {
 	//TODO:
 	fmt.Printf("s = %p\n", s)
-	return &goWorker{}
+	return newWorker(s.ctx)
 }
 
-func (s *goScheduler) Schedule(r Runnable, nanos int64) (Disposable, error) {
+func (s *goScheduler) Schedule(r Runnable, delayNanos int64) (Disposable, error) {
 	// TODO:
 	fmt.Printf("s = %p\n", s)
-	return s.CreateWorker().Schedule(r, nanos)
+	return s.CreateWorker().Schedule(r, delayNanos)
 }
