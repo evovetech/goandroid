@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import core.Core;
 import core.Counter;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setup(PublishSubject<View> subject, final boolean gogo) {
-        final Counter counter = new Counter(0);
+        final Counter counter = Core.newCounter(0);
         Scheduler scheduler = gogo
                 ? GoScheduler.instance()
                 : Schedulers.io();

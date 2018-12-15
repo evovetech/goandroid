@@ -2,6 +2,11 @@ package core
 
 // +build android
 
+type Counter interface {
+	Increment() int32
+	GetValue() int32
+}
+
 type Runnable interface {
 	Run() error
 }

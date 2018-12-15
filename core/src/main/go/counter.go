@@ -2,17 +2,21 @@ package core
 
 // +build android
 
-type Counter struct {
-	Value int32
+type counter struct {
+	value int32
 }
 
-func (c *Counter) Increment() int32 {
-	c.Value++
-	return c.Value
+func (c *counter) Increment() int32 {
+	c.value++
+	return c.value
 }
 
-func NewCounter(start int32) *Counter {
-	return &Counter{
-		Value: start,
+func (c *counter) GetValue() int32 {
+	return c.value
+}
+
+func NewCounter(start int32) Counter {
+	return &counter{
+		value: start,
 	}
 }
